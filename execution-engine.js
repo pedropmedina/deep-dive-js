@@ -60,3 +60,14 @@ const output = multiplyBy2(4);
  * 				constant newOutput
  */
 const newOutput = multiplyBy2(10);
+
+/**
+ * The call stack:
+ * --------------------
+ *
+ * As the engine executes (calls) all functions it'll creates
+ * a call of function stack with the purpose of keeping track
+ * of all the function calls and their local execution context.
+ * As the functions are executed (called), they get pushed to the stack
+ * and once returned, the javascript engine pops that function out of the stack, garbage collecting the local memory and freeing up space
+ */
