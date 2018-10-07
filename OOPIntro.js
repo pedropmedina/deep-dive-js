@@ -135,3 +135,66 @@ CreateUser.prototype.log = function() {
 
 const user1 = new CreateUser('Pedro', 29);
 const user2 = new CreateUser('Bianca', 33);
+
+/*
+	Exploring the use of subfunctions and the behavior of this when
+	calling the function, as well as the fix to the issue with the
+	use of arrow => functions
+	1 - declare function User in global memory and assign to it its function
+		definition as weel as the object combo with property 'prototype' that
+		gets assigned an empty object
+	2 - declare incrementAge in prototype object found in the User label
+		in global memory and assign to it the function definition
+	3 - declare user1 in global memory and assign to it the returned value
+		of calling User('Pedro, 29) with the keyword 'new' which will
+		automote the creating of the the object 'this' with __proto__ that
+		will refer to 'prototype' property under User
+			a - create a new local execution context
+			b - declare 'this' variable and assign it an empty object with the
+			__proto__ bond to the 'prototype' property found in the object
+			part of User function (this is the equivalent of manually creating
+			empty object with Object.create)
+			c - declare parameter name and assign it 'Pedro'
+			d - declare parameter age and assign it 29
+			e - declare property name in 'this' object and assign it 'Pedro'
+			f - declare property age in 'this' object and assign it 29
+			g - automatically return the 'this' object
+			h - assign the returned 'this' object to the use1 constant in
+				global memory
+	4 - run 'incrementAge' function attached to use1 label in global memory
+				a - look for incrementAge in user1 (Not found here)
+				b - look for incrementAge in __proto__ which will refere to
+					'prototype' property in the object found under User function
+					( method incrementAge is found here)
+				c - create a new local execution context
+				d - declare constant increment and assign it the function
+					definition
+				e - call increment function
+					I - create new local execution context
+					II - increment age by one (Since we are using an arrow function
+						the 'this' keyword is statically assigned, meaning that 'this'
+						refers to the place where the arrow function was defined, not
+						the place where it was called, therefore, 'this' will be
+						refering to left object of the dot notation when calling
+						incrementAge on user1. user1 is 'this', and there is where
+						we look for age. Using a regular function definition would
+						have assign 'this' to the 'window object' instead as
+						it would have been looking for the left side hand of the
+						dot notation on invocation which in that case is undefined, there
+						window becomes 'this' )
+					III - return new incremented age value
+	5 - assign new age value to age property in user1
+ */
+
+function User(name, age) {
+	this.name = name;
+	this.age = age;
+}
+
+User.prototype.incrementAge = function() {
+	const increment = () => this.age++;
+	return increment();
+};
+
+const user1 = new User('Pedro', 29);
+user1.incrementAge();
