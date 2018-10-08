@@ -172,7 +172,7 @@ const user2 = new CreateUser('Bianca', 33);
 				e - call increment function
 					I - create new local execution context
 					II - increment age by one (Since we are using an arrow function
-						the 'this' keyword is statically assigned, meaning that 'this'
+						the 'this' keyword is lexically scoped, meaning that 'this'
 						refers to the place where the arrow function was defined, not
 						the place where it was called, therefore, 'this' will be
 						refering to left object of the dot notation when calling
