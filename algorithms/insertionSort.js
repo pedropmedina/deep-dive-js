@@ -1,16 +1,4 @@
-/*
-	i -> keeps track of the unsorted array
-	j -> keep track of the item in the already sorted side of the array up to
-		the item preciding i
-
-	i's condition is loop arr as long as i < arr.length
-	j's condition is loop arr as long as j < i
-
-	if i is less than j
-		1 - remove item at i from array
-		2 - insert removed item at i and inserted at j position
-*/
-function insertionSort(numsArr) {
+function insertionSortV1(numsArr) {
 	for (let i = 1; i < numsArr.length; i++) {
 		for (let j = 0; j < i; j++) {
 			if (numsArr[i] < numsArr[j]) {
@@ -22,5 +10,31 @@ function insertionSort(numsArr) {
 	return numsArr;
 }
 
-const sortedArr = insertionSort([2, 5, 3, 4, 7, 6, 12, 11, 1]);
+function insertionSortV2(nums) {
+	for (let i = 1; i < nums.length; i++) {
+		let element = nums[i];
+		let j = i - 1;
+		while (j >= 0 && nums[j] > element) {
+			nums[j + 1] = nums[j];
+			j--;
+		}
+		nums[j + 1] = element;
+	}
+	return nums;
+}
+
+function insertionSortV3(nums) {
+	for (let i = 1; i < nums.length; i++) {
+		// keep copy of current element for use throughout sorted arr
+		let element = nums[i];
+		// loop backwards starting at the element before current element
+		for (let j = i - 1; j >= 0 && nums[j] > element; j--) {
+			nums[j + 1] = nums[j];
+			nums[j] = element;
+		}
+	}
+	return nums;
+}
+
+const sortedArr = insertionSortV3([2, 55, 323, 44, 7, 6, 12, 11, 1]);
 console.log(sortedArr);
