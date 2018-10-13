@@ -81,5 +81,8 @@ queue.enqueue('Pedro');
 
 queue.dequeue();
 
+console.log(queue.isEmpty());
+console.log(queue.peak());
+
 console.log(queue.list.head);
 console.log(queue.list.tail);
