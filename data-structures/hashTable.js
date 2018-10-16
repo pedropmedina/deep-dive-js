@@ -1,3 +1,11 @@
+function isEqual(obj1, obj2) {
+	const keys1 = Object.keys(obj1).join(',');
+	const keys2 = Object.keys(obj2).join(',');
+	const values1 = Object.values(obj1).join(',');
+	const values2 = Object.values(obj2).join(',');
+	return keys1 === keys2 && values1 === values2;
+}
+
 class Node {
 	constructor(data = null, next = null) {
 		this.data = data;
@@ -5,7 +13,7 @@ class Node {
 	}
 }
 
-class LinkedList {
+class List {
 	constructor() {
 		this.head = null;
 		this.tail = null;
@@ -22,7 +30,9 @@ class LinkedList {
 			return this;
 		}
 
-		return (this.head = newNode);
+		this.head = newNode;
+
+		return this;
 	}
 
 	append(data) {
@@ -30,7 +40,7 @@ class LinkedList {
 
 		const newNode = new Node(data);
 
-		if (!this.tail) {
+		if (!this.head) {
 			this.head = newNode;
 			this.tail = newNode;
 			return this;
@@ -38,8 +48,39 @@ class LinkedList {
 
 		this.tail.next = newNode;
 		this.tail = newNode;
-
 		return this;
+	}
+
+	delete(data) {
+		if (!data) return null;
+
+		let deletedNode = this.head;
+
+		if (isEqual(data, deletedNode.data)) {
+			this.head = deletedNode.next;
+
+			if (!this.head) {
+				this.tail = null;
+			}
+
+			return this;
+		}
+
+		let currentNode = this.head;
+
+		while (currentNode.next) {
+			if (isEqual(data, currentNode.next.data)) {
+				deletedNode = currentNode.next;
+				currentNode.next = deletedNode.next;
+
+				if (deletedNode === this.tail) this.tail = currentNode;
+
+				return deletedNode;
+			} else {
+				currentNode = currentNode.next;
+			}
+		}
+		return null;
 	}
 
 	find({ data, callback }) {
@@ -48,113 +89,106 @@ class LinkedList {
 		let currentNode = this.head;
 
 		while (currentNode) {
-			if (callback && callback(currentNode.data)) return currentNode;
+			if (callback && callback(currentNode)) return currentNode;
 
-			if (data && data.name === currentNode.data.name) return currentNode;
+			if (data && isEqual(currentNode.data, data)) return currentNode;
 
 			currentNode = currentNode.next;
 		}
 		return null;
 	}
 
-	delete(data) {
-		if (!data) return null;
-
+	toArray() {
 		if (!this.head) return null;
 
-		let deletedNode;
-
-		if (data.name === this.head.data.name) {
-			deletedNode = this.head;
-
-			if (this.head === this.tail) {
-				this.head = null;
-				this.tail = null;
-
-				return deletedNode;
-			} else {
-				this.head = deletedNode.next;
-
-				return deletedNode;
-			}
-		}
-
+		const arr = [];
 		let currentNode = this.head;
 
-		while (currentNode.next) {
-			if (currentNode.next.data.name === data.name) {
-				deletedNode = currentNode.next;
-				currentNode.next = currentNode.next.next;
-
-				if (deletedNode === this.tail) {
-					this.tail = currentNode;
-				}
-
-				return deletedNode;
-			}
+		while (currentNode) {
+			arr.push(currentNode.data);
 			currentNode = currentNode.next;
 		}
-		return null;
+		return arr;
+	}
+
+	fromArray(arr) {
+		if (!arr) return null;
+		arr.forEach(element => list.append(element));
+		return this;
 	}
 }
 
-// give table a default size
 const defaultSize = 20;
 
 class HashTable {
 	constructor() {
-		this.buckets = Array(defaultSize)
+		this.buckets = Array(20)
 			.fill(null)
-			.map(() => new LinkedList());
+			.map(bucket => new List());
 		this.keys = {};
 	}
 
+	// hash function
 	hash(key) {
-		// sum of charCodeAt % array's length
-		const hash = Array.from(key).reduce((acc, next) => {
-			return acc + next.charCodeAt(0);
-		}, 0);
-
+		let hash;
+		switch (typeof key) {
+			case 'string':
+				hash = Array.from(key).reduce(
+					(acc, next) => acc + next.charCodeAt(0),
+					0,
+				);
+				break;
+			case 'number':
+				hash = key;
+				break;
+		}
 		return hash % this.buckets.length;
 	}
 
 	set(key, data) {
-		// hash key -> e.g. 3 (an integer) to be used as index for array
-		const hashedKey = this.hash(key);
-		// save hashed key in keys object under its key label for easy access
-		this.keys[key] = hashedKey;
-		// access linked list with hashed key (index)
-		const linkedList = this.buckets[hashedKey];
-		// attempt to find node in linked list
-		const node = linkedList.find({ callback: data => data.key === key });
+		// obtain an index to access bucket
+		const index = this.hash(key);
+		// add key : index to keys for easy access
+		this.keys[key] = index;
+		// access the linkedList in buckets under the created index
+		const linkedList = this.buckets[index];
+		// attempt to find an existing node with the same data
+		const node = linkedList.find({
+			callback: node => isEqual(node.data, data),
+		});
 
+		// TODO: fix case in which data alredy exist and we need to update
 		if (!node) {
-			linkedList.append({ key, ...data });
+			linkedList.append(data);
 		} else {
-			node.data = { key, ...data };
+			node.data = { ...node.data, ...data };
 		}
 	}
 
-	delete(key) {
-		const hashedKey = this.hash(key);
-		delete this.keys[key];
-		const linkedList = this.buckets[hashedKey];
-		const node = linkedList.find({ callback: data => data.key === key });
-
-		if (node) return linkedList.delete(node.data);
-
-		return null;
+	get(key, data) {
+		const index = this.keys[key];
+		const linkedList = this.buckets[index];
+		const node = linkedList.find({
+			callback: node => isEqual(node.data, data),
+		});
+		return node ? node : null;
 	}
 
-	get(key) {
-		const linkedList = this.buckets[this.hash(key)];
-		const node = linkedList.find({ callback: data => data.key === key });
+	delete(key, data) {
+		const keyExist = this.keys.hasOwnProperty(key);
 
-		return node ? node.data : null;
+		if (keyExist) {
+			const linkedList = this.buckets[key];
+			const deletedNode = linkedList.delete(data);
+			delete keys[key];
+			return deletedNode;
+		} else {
+			return null;
+		}
 	}
 
 	has(key) {
-		return Object.hasOwnProperty.call(this.keys, key);
+		return this.keys.hasOwnProperty(key);
 	}
 
 	getKeys() {
@@ -162,37 +196,32 @@ class HashTable {
 	}
 }
 
-// testing list in isolation
-const list = new LinkedList();
-list.append({ key: 0, name: 'Bianca' });
-list.append({ key: 1, name: 'Luca' });
-list.append({ key: 2, name: 'Philippe' });
+const table = new HashTable();
+table.set('Bianca', { name: 'Bianca', age: 33 });
+console.log(table);
 
-list.delete({ name: 'Philippe' });
+// ----------------------------------------------------
+const list = new List();
 
-const foundWithData = list.find({ data: { name: 'Luca' } });
-const foundWithCallback = list.find({ callback: data => data.name === 'Luca' });
+list.prepend({ key: 'Pedro', name: 'Pedro', age: 29 });
+list.prepend({ key: 'Bianca', name: 'Bianca', age: 33 });
+list.append({ key: 'Luca', name: 'Luca', age: 5 });
 
-console.log(foundWithData);
-console.log(foundWithCallback);
+list.delete({ key: 'Bianca', name: 'Bianca', age: 33 });
+list.delete({ key: 'Luca', name: 'Luca', age: 5 });
+
+// const found = list.find({data: { key: 'Pedro', name: 'Pedro', age: 29 }})
+const found = list.find({ callback: node => node.data.key === 'Pedro' });
+
+const arr = list.toArray();
+
+const nodeArr = [
+	{ key: 'Philippe', name: 'Philippe', age: 7 },
+	{ key: 'Ana', name: 'Ana', age: 23 },
+];
+list.fromArray(nodeArr);
 
 console.log(list.head);
 console.log(list.tail);
-
-// testing hash table
-const table = new HashTable();
-
-table.set('Pedro', { name: 'Pedro' });
-table.set('Bianca', { name: 'Bianca' });
-
-table.delete('Bianca');
-
-console.log(table.get('Pedro'));
-
-console.log(table.has('Pedro'));
-console.log(table.has('Bianca'));
-
-console.log(table.getKeys());
-
-console.log(table.buckets);
-console.log(table.keys);
+console.log(found);
+console.log(arr);
