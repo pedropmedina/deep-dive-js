@@ -110,6 +110,7 @@ class Stack {
 	}
 }
 
+/*
 // testing list isolated
 const list = new List();
 list.prepend('Bianca');
@@ -140,3 +141,7 @@ console.log(stack.peak());
 
 console.log(stack.list.head);
 console.log(stack.list.tail);
+
+*/
+
+module.exports = Stack;
