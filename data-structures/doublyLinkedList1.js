@@ -14,7 +14,6 @@ DoublyLinkedList.prototype.insert = function(position, element) {
 	if (position > -1 && position <= this.length) {
 		let node = new Node(element),
 			current = this.head,
-			prev,
 			index = 0;
 
 		if (position === 0) {
@@ -43,9 +42,47 @@ DoublyLinkedList.prototype.insert = function(position, element) {
 
 		this.length++;
 
-		if (!this.tail) this.tail = node;
-
 		return this;
+	} else {
+		return null;
+	}
+};
+
+DoublyLinkedList.prototype.removeAt = function(position) {
+	if (position > -1 && position < this.length) {
+		let current = this.head,
+			deletedNode,
+			index = 0;
+
+		if (position === 0) {
+			if (!this.head) return null;
+
+			this.head = this.head.next;
+
+			if (this.head === this.tail) {
+				this.tail = null;
+			} else {
+				this.head.prev = null;
+			}
+		} else if (position === this.length - 1) {
+			deletedNode = this.tail;
+
+			this.tail = this.tail.prev;
+			this.tail.next = null;
+		} else {
+			while (index < position) {
+				current = current.next;
+				index++;
+			}
+
+			deletedNode = current;
+			current.prev.next = current.next;
+			current.next.prev = current.prev;
+		}
+
+		this.length--;
+
+		return deletedNode;
 	} else {
 		return null;
 	}
@@ -57,4 +94,6 @@ doublyList.insert(0, 'Luca');
 doublyList.insert(1, 'Bianca');
 doublyList.insert(1, 'Pedro');
 
-console.log(doublyList.head);
+doublyList.removeAt(1);
+
+console.log(doublyList);
