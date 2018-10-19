@@ -1,3 +1,10 @@
+// The advantages of linked lists over arrays is that when removing
+// elements we do not need to shif the values, just update the link,
+// whereas in arrays, every time an element is removed the elements
+// must be shift to accomodate their new indexes.
+// When working with data that require lots of insertion and deletion
+// linked lists are a better fit than arrays as they are O(1).
+// Array are a better options when traversing data
 function Node(element = null, next = null) {
 	this.element = element;
 	this.next = next;
