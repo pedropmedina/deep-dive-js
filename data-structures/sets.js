@@ -59,6 +59,26 @@ Set.prototype.values = function() {
 	return values;
 };
 
+// returns a new set with unique elements from both sets.
+// Start by creating a new set and adding to it the elements of
+// set 1, then add to new set elements from set 2 that do not
+// already exists in the new set
+Set.prototype.union = function(otherSet) {
+	let unionSet = new Set();
+
+	let values = this.values();
+	for (let i = 0; i < values.length; i++) {
+		unionSet.add(values[i]);
+	}
+
+	values = otherSet.values();
+	for (let i = 0; i < values.length; i++) {
+		unionSet.add(values[i]);
+	}
+
+	return unionSet;
+};
+
 const set = new Set();
 
 set.add(0);
@@ -82,3 +102,18 @@ console.log(size);
 console.log(values);
 
 console.log(set.items);
+
+// testing union
+
+const set1 = new Set();
+set1.add(1);
+set1.add(2);
+set1.add(3);
+
+const set2 = new Set();
+set2.add(2);
+set2.add(3);
+set2.add(5);
+
+const unionSet = set1.union(set2);
+console.log(unionSet);
