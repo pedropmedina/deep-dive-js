@@ -93,21 +93,15 @@ Set.prototype.intersection = function(otherSet) {
 	return intersectionSet;
 };
 
-// given sets A and B, return set C with elements existing in A, and not in B,
-// and elements exisiting in B, and not in A
+// given sets A and B, return set C with elements existing in A, and not in B
+// difference could also be implemented to return a new set with elements
+// existing in B, and not A, and elements exisiting in A and not B
 Set.prototype.difference = function(otherSet) {
 	const differenceSet = new Set();
 
 	let values = this.values();
 	for (let i = 0; i < values.length; i++) {
 		if (!otherSet.has(values[i])) {
-			differenceSet.add(values[i]);
-		}
-	}
-
-	values = otherSet.values();
-	for (let i = 0; i < values.length; i++) {
-		if (!this.has(values[i])) {
 			differenceSet.add(values[i]);
 		}
 	}
