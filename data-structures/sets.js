@@ -115,6 +115,24 @@ Set.prototype.difference = function(otherSet) {
 	return differenceSet;
 };
 
+// given two sets A and B, return true if A is subset of B, meaning
+// for every element in A, it must also exist in B. Important thing
+// to consider here is the size of A. As a subset of B, A's size
+// must be lesser or the same as B's size to qualify as a subset as
+// all elements in A must also exist in B
+Set.prototype.subset = function(otherSet) {
+	const values = this.values();
+
+	if (otherSet.size() < values.length) {
+		return false;
+	} else {
+		for (let i = 0; i < values.length; i++) {
+			if (!otherSet.has(values[i])) return false;
+		}
+		return true;
+	}
+};
+
 // testing set
 const set = new Set();
 
@@ -190,3 +208,18 @@ set6.add(5);
 
 const difference = set5.difference(set6);
 console.log(difference);
+
+// testing subsets
+const set7 = new Set();
+set7.add(1);
+set7.add(2);
+set7.add(3);
+
+const set8 = new Set();
+set8.add(2);
+set8.add(3);
+set8.add(1);
+set8.add(5);
+
+const subset = set7.subset(set8);
+console.log(subset);
