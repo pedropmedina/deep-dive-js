@@ -57,11 +57,11 @@ DoublyLinkedList.prototype.removeAt = function(position) {
 		if (position === 0) {
 			if (!this.head) return null;
 
-			this.head = this.head.next;
-
 			if (this.head === this.tail) {
+				this.head = null;
 				this.tail = null;
 			} else {
+				this.head = this.head.next;
 				this.head.prev = null;
 			}
 		} else if (position === this.length - 1) {
@@ -88,6 +88,26 @@ DoublyLinkedList.prototype.removeAt = function(position) {
 	}
 };
 
+DoublyLinkedList.prototype.indexOf = function(element) {
+	let index = 0,
+		current = this.head;
+
+	while (index < this.length) {
+		if (element === current.element) {
+			return index;
+		}
+
+		current = current.next;
+		index++;
+	}
+	return -1;
+};
+
+DoublyLinkedList.prototype.remove = function(element) {
+	const index = this.indexOf(element);
+	return this.removeAt(index);
+};
+
 const doublyList = new DoublyLinkedList();
 
 doublyList.insert(0, 'Luca');
@@ -96,4 +116,9 @@ doublyList.insert(1, 'Pedro');
 
 doublyList.removeAt(1);
 
+const index = doublyList.indexOf('Bianca');
+
+doublyList.remove('Bianca');
+
 console.log(doublyList);
+console.log(index);
