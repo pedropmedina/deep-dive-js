@@ -1,0 +1,14 @@
+logs
+*.log
+*.logs
+yarn.error.log*
+yarn.debug.log*
+npm-debug.log*
+
+
+node_modules
+
+.env
+
+.DS_Store
+.DS_Store?
