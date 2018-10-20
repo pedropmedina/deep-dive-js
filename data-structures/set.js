@@ -1,6 +1,7 @@
 // Sets -> sequencial data structure with unique values. (No values can repeat)
 // Since objects do not allow for same property names, they guarantee
-// uniqueness, values with same key will overwrite the previous key
+// uniqueness, values with same key will overwrite the previous key.
+// Sets store [key, key],  e.g. ({0: 0, Bianca: Bianca})
 function Set() {
 	this.items = {};
 }
