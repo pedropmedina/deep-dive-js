@@ -5,6 +5,10 @@
 // the hash function it'll get the wrong element as they were shift from
 // position. This is why we simple assign it undefined to the
 // index where the element was removed from
+// Techniques to handle collision:
+// 1 - separate chainig ✓ (this is the one implemented below)
+// 2 - linear probing
+// 3 - double hashing
 
 // --------------------------------------------------------------- Node
 function Node(key = null, value = null, next = null) {
