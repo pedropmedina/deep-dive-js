@@ -14,7 +14,7 @@ function Node(key = null, value = null, next = null) {
 }
 
 Node.prototype.toString = function(position) {
-	return `[${this.key} (${position}) - ${this.value}]`;
+	return `(${position}): [${this.key} - ${this.value}]`;
 };
 
 // --------------------------------------------------------------- Linked List
@@ -85,6 +85,7 @@ function HashTable() {
 	this.table = [];
 }
 
+// lose lose hash
 HashTable.prototype.loseloseHashCode = function(key) {
 	let hash = 0;
 	for (let i = 0; i < key.length; i++) {
@@ -93,8 +94,18 @@ HashTable.prototype.loseloseHashCode = function(key) {
 	return hash % 37;
 };
 
+// djb2 hash
+HashTable.prototype.djb2HashCode = function(key) {
+	let hash = 5381;
+	for (let i = 0; i < key.length; i++) {
+		hash = hash * 33 + key.charCodeAt(i);
+	}
+	return hash % 1013;
+};
+
 HashTable.prototype.put = function(key, value) {
-	const position = this.loseloseHashCode(key);
+	// const position = this.loseloseHashCode(key);
+	const position = this.djb2HashCode(key);
 	if (!this.table[position]) {
 		this.table[position] = new LinkedList();
 	}
@@ -104,13 +115,15 @@ HashTable.prototype.put = function(key, value) {
 };
 
 HashTable.prototype.get = function(key) {
-	const list = this.table[this.loseloseHashCode(key)];
+	// const list = this.table[this.loseloseHashCode(key)];
+	const list = this.table[this.djb2HashCode(key)];
 	if (!list) return undefined;
 	return list.find(key);
 };
 
 HashTable.prototype.remove = function(key) {
-	const list = this.table[this.loseloseHashCode(key)];
+	// const list = this.table[this.loseloseHashCode(key)];
+	const list = this.table[this.djb2HashCode(key)];
 	return list.delete(key);
 };
 
@@ -129,4 +142,4 @@ console.log(deleted);
 const gotten = table.get('Philippe');
 console.log(gotten);
 
-console.log(table.table[16]);
+console.log(table.table[624]);
