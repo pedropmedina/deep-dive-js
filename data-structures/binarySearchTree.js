@@ -96,6 +96,56 @@ function searchNode(node, key) {
 	}
 }
 
+function removeNode(node, key) {
+	if (!node) {
+		return null;
+	}
+
+	// walk down the left side of the tree
+	if (key < node.key) {
+		node.left = removeNode(node.left, key);
+		return node;
+		// walk down the right side of the tree
+	} else if (key > node.key) {
+		node.right = removeNode(node.right, key);
+		return node;
+		// once the key is found
+	} else {
+		// scenario # 1
+		// we reached the leaves of the tree with null to both sides
+		if (!node.left && !node.right) {
+			node = null;
+			return node;
+		}
+		// scenario # 2
+		// we reached the node, but it has a child to the right
+		if (!node.left) {
+			node = node.right;
+			return node;
+
+			// scenario # 3
+			// we reached the node, but it has a child to the left
+		} else if (!node.right) {
+			node = node.left;
+			return node;
+		}
+
+		// scenario # 4
+		// in the case where the node to be removed has nodes to both sides
+		let aux = findMinNode(node.right);
+		node.key = aux.key;
+		node.right = removeNode(node.right, aux.key);
+		return node;
+	}
+}
+
+function findMinNode(node) {
+	while (node && node.left) {
+		node = node.left;
+	}
+	return node;
+}
+
 // ----------------------------------------------------------- Node
 function Node(key) {
 	this.key = key;
@@ -142,16 +192,18 @@ BinarySearchTree.prototype.max = function() {
 	return maxNode(this.root);
 };
 
-BinarySearchTree.prototype.remove = function(key) {};
+BinarySearchTree.prototype.remove = function(key) {
+	this.root = removeNode(this.root, key);
+};
 
 const bst = new BinarySearchTree();
 bst.insert(8);
 bst.insert(6);
-bst.insert(9);
-bst.insert(15);
+bst.insert(5);
+// bst.insert(7);
 bst.insert(10);
-bst.insert(2);
-bst.insert(20);
+bst.insert(9);
+bst.insert(12);
 
 bst.inOrderTraverse(key => console.log('in order', key));
 
@@ -167,5 +219,7 @@ console.log(max);
 
 const found = bst.search(6);
 console.log(found);
+
+bst.remove(6);
 
 console.log(bst.root);
