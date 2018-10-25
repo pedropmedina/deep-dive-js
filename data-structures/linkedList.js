@@ -1,135 +1,132 @@
+/*
+	methods:
+		1 - prepend
+		2 - append
+		3 - insert
+		4 - delete
+		5 - deleteHead
+		6 - deleteTail
+		7 - indexOf
+		8 - isEmpty
+		9 - size
+		10 - toArray
+		11 - fromArray
+		12 - toString
+*/
 class Node {
-	constructor(data, next = null) {
-		this.data = data;
+	constructor(value = null, next = null) {
+		this.value = value;
 		this.next = next;
 	}
 
 	toString(callback) {
-		return callback ? callback(this.data) : `${this.data}`;
+		return callback ? callback(this.value) : `${this.value}`;
 	}
 }
 
-class LinkList {
+class List {
 	constructor() {
 		this.head = null;
 		this.tail = null;
+		this.length = 0;
 	}
 
-	prepend(data) {
-		const newNode = new Node(data, this.head);
-
-		this.head = newNode;
-
-		// This only takes place the first time the list is created
-		if (!this.tail) {
-			this.tail = newNode;
+	prepend(value) {
+		if (!value) {
+			return null;
 		}
+
+		const node = new Node(value, this.head);
+
+		this.head = node;
+
+		if (!this.tail) {
+			this.tail = node;
+		}
+
+		this.length++;
 
 		return this;
 	}
 
-	append(data) {
-		const newNode = new Node(data);
-		// if !head, start over by assigning node to both head and tail
-		if (!this.head) {
-			this.head = newNode;
-			this.tail = newNode;
+	append(value) {
+		if (!value) {
+			return null;
+		}
+
+		const node = new Node(value);
+
+		if (!this.tail) {
+			this.head = node;
+			this.tail = node;
+			this.length++;
 
 			return this;
 		}
 
-		// Tail keeps a point reference to the latest node in list.
-		// We use it to reference that node and add a newest one next to it,
-		// then we reassign tail to the newest appended node
-		this.tail.next = newNode;
-		this.tail = newNode;
+		this.tail.next = node;
+		this.tail = node;
+		this.length++;
 
 		return this;
 	}
 
-	delete(data) {
+	insert(value, index) {
+		if (!value || index <= -1 || index >= this.length) {
+			return null;
+		}
+
+		if (index === 0) {
+			return this.prepend(value, this.head);
+		}
+
+		if (index === this.length - 1) {
+			return this.append(value);
+		}
+
+		let node = new Node(value);
+		let current = this.head;
+		let previous = this.head;
+
+		while (index) {
+			previous = current;
+			current = current.next;
+			index--;
+		}
+
+		node.next = current;
+		previous.next = node;
+		return this;
+	}
+
+	delete(value) {
 		if (!this.head) {
 			return null;
 		}
 
-		let deletedNode = null;
-
-		// handle deletion of head
-		if (this.head && this.head.data === data) {
-			deletedNode = this.head;
-			this.head = this.head.next;
+		if (value === this.head.value) {
+			return this.deleteHead();
 		}
 
-		let currentNode = this.head;
-
-		// handing deletion of nodes between head and tail
-		if (currentNode !== null) {
-			while (currentNode.next) {
-				if (currentNode.next.data === data) {
-					deletedNode = currentNode.next;
-					currentNode.next = deletedNode.next;
-				} else {
-					currentNode = currentNode.next;
-				}
-			}
+		if (value === this.tail.value) {
+			return this.deleteTail();
 		}
 
-		// handle tail to reference the last object now in the list
-		if (this.tail.data == data) {
-			this.tail = currentNode;
-		}
+		let current = this.head.next,
+			previous = this.head,
+			deleted;
 
-		return deletedNode;
-	}
-
-	find({ data = undefined, callback = undefined }) {
-		if (!this.head) {
-			return null;
-		}
-
-		let currentNode = this.head;
-
-		// the user is given the option to use a callback returns a boolean,
-		// allowing user to evaluate node's data with different set of conditions
-		while (currentNode) {
-			if (callback && callback(currentNode.data)) {
-				return currentNode;
+		while (current) {
+			if (current.value === value) {
+				deleted = current;
+				previous.next = current.next;
 			}
 
-			if (data && currentNode.data === data) {
-				return currentNode;
-			}
-
-			currentNode = currentNode.next;
-		}
-		return null;
-	}
-
-	deleteTail() {
-		const deletedTail = this.tail;
-
-		// In the event there's only one node in list
-		if (this.head === this.tail) {
-			this.head = null;
-			this.tail = null;
-
-			return deletedTail;
+			previous = current;
+			current = current.next;
 		}
 
-		let currentNode = this.head;
-
-		while (currentNode.next) {
-			if (!currentNode.next.next) {
-				currentNode.next = null;
-			} else {
-				currentNode = currentNode.next;
-			}
-		}
-
-		// update tail to last node in list
-		this.tail = currentNode;
-
-		return deletedTail;
+		return deleted;
 	}
 
 	deleteHead() {
@@ -137,58 +134,117 @@ class LinkList {
 			return null;
 		}
 
-		const deletedHead = this.head;
+		const deleted = this.head;
 
-		if (this.head.next) {
-			this.head = this.head.next;
-		} else {
+		if (this.head === this.tail) {
 			this.head = null;
 			this.tail = null;
+
+			return deleted;
 		}
 
-		return deletedHead;
+		this.head = deleted.next;
+
+		return deleted;
 	}
 
-	fromArray(dataArr) {
-		dataArr.forEach(data => this.append(data));
-
-		return this;
-	}
-
-	toArray() {
-		const nodes = [];
-
-		let currentNode = this.head;
-
-		while (currentNode) {
-			nodes.push(currentNode);
-			currentNode = currentNode.next;
+	deleteTail() {
+		if (!this.head) {
+			return null;
 		}
 
-		return nodes;
+		let deleted = this.tail,
+			current = this.head,
+			previous;
+
+		if (this.head === this.tail) {
+			this.head = null;
+			this.tail = null;
+
+			return deleted;
+		}
+
+		while (current) {
+			if (current === this.tail) {
+				previous.next = null;
+				this.tail = previous;
+			}
+
+			previous = current;
+			current = current.next;
+		}
+
+		return deleted;
+	}
+
+	indexOf(value) {
+		if (!value) {
+			return -1;
+		}
+
+		// let current = this.head;
+		// let index = 0;
+
+		// while (current) {
+		// 	if (current.value === value) {
+		// 		return index;
+		// 	}
+
+		// 	current = current.next;
+		// 	index++;
+		// }
+		// return -1;
+
+		// recursive version
+		const index = indexOfNode(this.head, value);
+
+		return index !== 0 && !index ? -1 : index;
+	}
+
+	isEmpty() {
+		return !this.length;
+	}
+
+	size() {
+		return this.length;
 	}
 }
 
-const linkedList = new LinkList();
-linkedList.prepend('Pedro');
-// linkedList.prepend('Bianca');
-// linkedList.prepend('Luca');
+// ----------------------------------------------------- helpers
+function indexOfNode(node, value) {
+	if (!node) return;
 
-linkedList.append('Philippe');
-linkedList.append('Sergio');
+	if (node.value === value) {
+		return 0;
+	} else {
+		return indexOfNode(node.next, value) + 1;
+	}
+}
 
-// linkedList.delete('Sergio');
+// ----------------------------------------------------- test
+const list = new List();
 
-const foundNode = linkedList.find({ data: 'Philippe' });
+list.prepend('bianca');
+list.prepend('luca');
 
-linkedList.fromArray(['Ann', 'Jane']);
+list.append('philippe');
 
-const nodesArr = linkedList.toArray();
+const index = list.indexOf('luca');
+console.log(index);
 
-console.log(linkedList.head);
+const size = list.size();
+console.log(size);
 
-console.log(linkedList.tail);
+const empty = list.isEmpty();
+console.log(empty);
 
-console.log(foundNode);
+list.insert('pedro', 1);
 
-console.log(nodesArr);
+list.deleteHead();
+
+// list.deleteTail();
+
+list.delete('philippe');
+
+console.log(list.head);
+console.log(list.tail);
