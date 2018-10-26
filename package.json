@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "xxhashjs": "^0.2.2"
+  }
+}
