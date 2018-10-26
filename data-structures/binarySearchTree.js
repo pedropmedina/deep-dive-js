@@ -49,6 +49,7 @@ class BST {
 		this.root = removeNode(this.root, key);
 	}
 
+	// depth first traversal
 	inOrderTraverse(callback) {
 		inOrderTraverseNode(this.root, callback);
 	}
@@ -59,6 +60,11 @@ class BST {
 
 	postOrderTraverse(callback) {
 		postOrderTraverseNode(this.root, callback);
+	}
+
+	// breadth first traversal
+	breadthFirstTraverse() {
+		return breadthFirstTraverseNode([this.root], []);
 	}
 }
 
@@ -178,6 +184,28 @@ function postOrderTraverseNode(node, callback) {
 	}
 }
 
+function breadthFirstTraverseNode(queue, array) {
+	if (!queue || !queue.length) {
+		return array;
+	}
+
+	while (queue.length) {
+		const node = queue.shift();
+
+		array.push(node.key);
+
+		if (node.left) {
+			queue.push(node.left);
+		}
+
+		if (node.right) {
+			queue.push(node.right);
+		}
+	}
+
+	return array;
+}
+
 // ---------------------------------------------------- test
 const tree = new BST();
 
@@ -204,5 +232,8 @@ const min = tree.min();
 console.log(min);
 
 tree.remove(8);
+
+const array = tree.breadthFirstTraverse();
+console.log(array);
 
 console.log(tree.root);
