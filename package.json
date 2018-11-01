@@ -1,5 +1,22 @@
 {
-  "dependencies": {
-    "xxhashjs": "^0.2.2"
+  "name": "deep-dive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedropmedina/deep-dive-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pedropmedina/deep-dive-js/issues"
+  },
+  "homepage": "https://github.com/pedropmedina/deep-dive-js#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.5"
   }
 }
