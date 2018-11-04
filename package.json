@@ -18,5 +18,8 @@
   "homepage": "https://github.com/pedropmedina/deep-dive-js#readme",
   "devDependencies": {
     "nodemon": "^1.18.5"
+  },
+  "dependencies": {
+    "ramda": "^0.25.0"
   }
 }
